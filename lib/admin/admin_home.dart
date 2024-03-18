@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travelfreeapp/admin/Hotel_add.dart';
 import 'package:travelfreeapp/admin/admin_add_place.dart';
 import 'package:travelfreeapp/admin/guide_list_page.dart';
 
@@ -19,6 +20,7 @@ class AdminHomeScreen extends StatelessWidget {
             CustomGridItem(
               title: 'Add Place',
               onTap: () {
+                // Navigate to AdminAddPlacePage when the button is tapped
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -47,8 +49,12 @@ class AdminHomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20), // Adjust the gap between buttons
             CustomGridItem(
-              title: 'Add Another',
+              title: 'Add hotel',
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HotelAddPage()),
+                );
                 // Handle add another action
               },
               gradientColors: [

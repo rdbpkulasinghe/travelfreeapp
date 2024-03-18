@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:travelfreeapp/reusable_widget/bottomnavbar.dart';
 
 class ApprovedGuideListPage extends StatelessWidget {
@@ -96,13 +95,14 @@ class ApprovedGuideListPage extends StatelessWidget {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    _showDatePicker(context);
+                                    // Add button functionality
+                                    // You can use this onPressed callback to add guide
                                   },
                                   style: ElevatedButton.styleFrom(
                                     primary:
                                         Colors.lightBlue, // Background color
                                   ),
-                                  child: const Text('Booking Date'),
+                                  child: const Text('Add'),
                                 ),
                                 const SizedBox(width: 20),
                                 ElevatedButton(
@@ -131,21 +131,6 @@ class ApprovedGuideListPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: const BottomNavBar(),
-    );
-  }
-
-  void _showDatePicker(BuildContext context) {
-    DatePicker.showDatePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime.now(),
-      maxTime: DateTime(2025, 12, 31),
-      onConfirm: (date) {
-        // Handle the selected date
-        print('Selected date: $date');
-        // You can perform actions with the selected date here
-      },
-      currentTime: DateTime.now(),
     );
   }
 }
