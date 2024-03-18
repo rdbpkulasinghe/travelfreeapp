@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "88052046038",
+    "project_id": "travelapplk",
+    "storage_bucket": "travelapplk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88052046038:android:04e338d662938473a41177",
+        "android_client_info": {
+          "package_name": "com.example.travelfreeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbhgjNtdmZy6e_kUHsxPc5BDgs17Rz9rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
