@@ -17,8 +17,8 @@ Follow these steps to set up the Flutter project on your local machine:
    3. Install dependencies:
 
         flutter pub get
-    
-    4. Run the project:
+        
+   4. Run the project:
 
         flutter run
 
