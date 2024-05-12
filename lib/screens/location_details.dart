@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, prefer_final_fields, unused_field
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
@@ -44,6 +46,7 @@ class BusinessInfoWidget extends StatelessWidget {
             'Address: $address', // Display address
             style: const TextStyle(fontSize: 16, color: Colors.black),
           ),
+          
           if (showMapButton)
             ElevatedButton(
               onPressed: onMapButtonPressed,
