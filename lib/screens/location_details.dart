@@ -27,7 +27,7 @@ class BusinessInfoWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.0),
-        color: Colors.lightBlueAccent,
+        color: Color.fromARGB(255, 3, 25, 47),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +46,6 @@ class BusinessInfoWidget extends StatelessWidget {
             'Address: $address', // Display address
             style: const TextStyle(fontSize: 16, color: Colors.black),
           ),
-          
           if (showMapButton)
             ElevatedButton(
               onPressed: onMapButtonPressed,
@@ -102,7 +101,7 @@ class _NotificState extends State<Notific> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Details'),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         elevation: 0, // Remove shadow
       ),
       body: SafeArea(
