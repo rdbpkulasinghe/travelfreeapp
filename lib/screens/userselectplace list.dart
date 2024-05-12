@@ -198,7 +198,9 @@ class UserSelectPlace extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const Notific(),
+                                    builder: (context) => Notific(
+                                      doc: place,
+                                    ),
                                   ),
                                 );
                               },

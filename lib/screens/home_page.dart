@@ -180,6 +180,8 @@ class HomePage extends StatelessWidget {
               var place =
                   snapshot.data!.docs[index].data() as Map<String, dynamic>;
 
+              var id = place['id'];
+
               List<String> imageUrls = List<String>.from(place['imageUrls']);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,7 +318,7 @@ class HomePage extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const Notific(),
+                                    builder: (context) => Notific(doc: place),
                                   ),
                                 );
                               },

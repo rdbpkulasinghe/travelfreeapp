@@ -1,4 +1,6 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:travelfreeapp/screens/map_page.dart';
 
 class BusinessInfoWidget extends StatelessWidget {
@@ -54,7 +56,13 @@ class BusinessInfoWidget extends StatelessWidget {
 }
 
 class Notific extends StatefulWidget {
-  const Notific({Key? key}) : super(key: key);
+  // const Notific({Key? key}) : super(key: key);
+
+  // ignore: prefer_typing_uninitialized_variables
+  final doc;
+  // final String title = "dfff";
+
+  const Notific({super.key, required this.doc});
 
   @override
   State<Notific> createState() => _NotificState();
@@ -71,6 +79,11 @@ class _NotificState extends State<Notific> {
     // Add more moving image paths as needed
   ];
 
+  final CarouselController _carouselController = CarouselController();
+
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance; // Firestore instance
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -79,6 +92,9 @@ class _NotificState extends State<Notific> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> imageUrls = widget.doc['imageUrls'];
+    List<String> stringList =
+        imageUrls.map((element) => element.toString()).toList();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -95,57 +111,60 @@ class _NotificState extends State<Notific> {
                 height: 200.0,
                 child: Stack(
                   children: [
-                    PageView.builder(
-                      controller: _pageController,
-                      itemCount: movingImages.length,
-                      itemBuilder: (context, index) {
-                        return Center(
-                          child: Image.asset(
-                            movingImages[index],
-                            width: double.infinity,
-                            height: 300.0,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      },
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CarouselSlider(
+                        carouselController: _carouselController,
+                        options: CarouselOptions(
+                          height: 200.0,
+                          aspectRatio: 16 / 9,
+                          viewportFraction: 0.8,
+                          initialPage: 0,
+                          enableInfiniteScroll: true,
+                          reverse: false,
+                          autoPlay: false, // Disable auto play
+                          enlargeCenterPage: true,
+                          scrollDirection: Axis.horizontal,
                         ),
-                        onPressed: () {
-                          if (_currentIndex > 0) {
-                            _pageController.previousPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          if (_currentIndex < movingImages.length - 1) {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
+                        items: stringList.map((imageUrl) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  image: DecorationImage(
+                                    image: NetworkImage(imageUrl),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        _carouselController.previousPage();
+                                      },
+                                      icon: const Icon(Icons.arrow_back_ios,
+                                          color: Colors.white),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        _carouselController.nextPage();
+                                      },
+                                      icon: const Icon(Icons.arrow_forward_ios,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
                       ),
                     ),
                   ],
@@ -154,33 +173,44 @@ class _NotificState extends State<Notific> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: BusinessInfoWidget(
-                  title: ' Nine Arch Bridge',
-                  content:
-                      "Welcome to the Nine Arch Bridge in Ella, Sri Lanka – a breathtaking blend of history and natural splendor. Built in 1921 during the British colonial era, this iconic bridge boasts nine picturesque arches, each a testament to architectural finesse.\n\n"
-                      "Why visit? The Nine Arch Bridge isn't just a crossing, it's a journey into a realm where lush tea plantations and mist-covered hills create a mesmerizing backdrop. As you stroll across this living masterpiece, let the echoes of history and the panoramic views of the Ella Valley captivate your senses.\n\n"
-                      "Top features:\n\n"
-                      "Architectural Marvel: Marvel at the nine gracefully crafted arches that stand as a timeless symbol of craftsmanship.\n\n"
-                      "Scenic Beauty: Immerse yourself in the surrounding tea plantations and verdant hills, making every step a visual delight.\n\n"
-                      "Historical Charm: Step back in time and feel the colonial legacy as you explore this heritage site.\n\n"
-                      "Pro Tip: Plan your visit during sunrise or sunset for a magical experience. Capture the moments, breathe in the fresh mountain air, and let the Nine Arch Bridge leave an indelible mark on your travel memories.Ready to embark on a journey like no other? Explore the Nine Arch Bridge – where history meets natural beauty. Your adventure awaits!\n\n"
-                      "ContactNumber: 0773695125\n"
-                      "Open Hours: 24 hours\n",
-                  address: 'Your Address Here', // Provide the address
-                  showMapButton: true,
-                  onMapButtonPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MapPage(
-                          latitude: 0.0, // Provide latitude value here
-                          longitude: 0.0,
-                          address: '', // Provide longitude value here
-                          placeName:
-                              'Your Place Name', // Provide place name here
-                        ),
-                      ),
-                    );
+                child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  future: _firestore
+                      .collection('places')
+                      .doc(widget.doc['id'])
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator(); // Show loading indicator while data is being fetched
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        var data = snapshot.data;
+                        return BusinessInfoWidget(
+                          title: widget.doc['name'],
+                          content: widget.doc['information'],
+                          address: widget.doc['address'],
+                          showMapButton: true,
+                          onMapButtonPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MapPage(
+                                  latitude: 0.0, // Provide latitude value here
+                                  longitude:
+                                      0.0, // Provide longitude value here
+                                  address: '', // Provide address value here
+                                  placeName:
+                                      'Your Place Name', // Provide place name here
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return const Text('No data available');
+                      }
+                    }
                   },
                 ),
               ),
