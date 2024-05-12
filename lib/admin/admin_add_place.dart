@@ -18,6 +18,7 @@ class AdminAddPlacePage extends StatefulWidget {
 class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _informationController = TextEditingController();
+  final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _localPriceController = TextEditingController();
   final TextEditingController _foreignPriceController = TextEditingController();
   final TextEditingController _childPriceController = TextEditingController();
@@ -68,6 +69,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
     if (!_isLocationSelected() ||
         _nameController.text.isEmpty ||
         _informationController.text.isEmpty ||
+        _detailsController.text.isEmpty ||
         _localPriceController.text.isEmpty ||
         _foreignPriceController.text.isEmpty ||
         _childPriceController.text.isEmpty ||
@@ -98,6 +100,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
       await firestore.collection('places').add({
         'name': _nameController.text,
         'information': _informationController.text,
+        'details': _detailsController.text,
         'localPrice': _localPriceController.text,
         'localCurrency': _selectedLocalCurrency,
         'foreignPrice': _foreignPriceController.text,
@@ -116,6 +119,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
 
       _nameController.clear();
       _informationController.clear();
+      _detailsController.clear();
       _localPriceController.clear();
       _foreignPriceController.clear();
       _childPriceController.clear();
@@ -216,6 +220,11 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
               TextField(
                 controller: _informationController,
                 decoration: const InputDecoration(labelText: 'Information'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _detailsController,
+                decoration: const InputDecoration(labelText: 'details'),
               ),
               const SizedBox(height: 10),
               Row(

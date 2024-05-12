@@ -27,7 +27,7 @@ class BusinessInfoWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.0),
-        color: Color.fromARGB(255, 3, 25, 47),
+        color: const Color.fromARGB(255, 115, 177, 243),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +190,7 @@ class _NotificState extends State<Notific> {
                         var data = snapshot.data;
                         return BusinessInfoWidget(
                           title: widget.doc['name'],
-                          content: widget.doc['information'],
+                          content: widget.doc['details'],
                           address: widget.doc['address'],
                           showMapButton: true,
                           onMapButtonPressed: () {

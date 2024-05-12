@@ -182,6 +182,13 @@ class UserSelectAllPlace extends StatelessWidget {
                                 ),
                               ),
                               Text(
+                                '${place['details'] ?? 'N/A'}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
                                 'Tel no: ${place['contactNumber'] ?? 'N/A'}',
                                 style: const TextStyle(
                                   color: Colors.black,
