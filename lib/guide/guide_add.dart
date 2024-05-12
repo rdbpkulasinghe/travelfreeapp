@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +10,7 @@ class GuideAddPage extends StatefulWidget {
   const GuideAddPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _GuideAddPageState createState() => _GuideAddPageState();
 }
 
@@ -76,6 +78,24 @@ class _GuideAddPageState extends State<GuideAddPage> {
     });
   }
 
+  Future<String?> _getCurrentUserEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return user.email;
+    }
+    return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUserEmail().then((email) {
+      if (email != null) {
+        _emailController.text = email;
+      }
+    });
+  }
+
   Future<void> _saveDataToFirebase() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -122,6 +142,7 @@ class _GuideAddPageState extends State<GuideAddPage> {
 
         // Show success message
         showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -137,8 +158,10 @@ class _GuideAddPageState extends State<GuideAddPage> {
           },
         );
       } catch (error) {
+        // ignore: avoid_print
         print('Error saving data to Firestore: $error');
         // Show error message
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Failed to save guide. Please try again.')),
@@ -151,6 +174,7 @@ class _GuideAddPageState extends State<GuideAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         title: const Text('Add Guide'),
       ),
       body: SingleChildScrollView(
@@ -204,10 +228,24 @@ class _GuideAddPageState extends State<GuideAddPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _getImage(ImageSource.gallery, false);
+                  _getImage(ImageSource.gallery, false); // Change button action
                 },
-                child: Text(
-                    _letterImage != null ? 'Change Letter' : 'Upload Letter'),
+                child: Column(
+                  children: [
+                    Text(
+                      _letterImage != null
+                          ? 'Change Confirmation Letter'
+                          : 'Upload Confirmation Letter',
+                    ),
+                    Text(
+                      'Please upload a confirmation letter from the village officer',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               if (_letterImage != null)
                 Text(

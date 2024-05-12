@@ -52,6 +52,13 @@ dependencies:
   logger: ^2.0.2+1
   geolocator: ^11.0.0
   flutter_datetime_picker: ^1.5.1
+  intl: ^0.17.0
+  table_calendar: ^3.0.8
+  firebase_messaging: ^14.8.2
+  shared_preferences: ^2.0.0
+  firebase_database: ^10.5.2
+ 
+
 
 dev_dependencies:
   flutter_test:
@@ -78,11 +85,10 @@ flutter:
   assets:
     - assets/images/logo1.png
     - assets/images/ninearch.jpg
-    - assets\images\ninearch1.jpg
-    - assets\images\ninearch2.jpg
-    - assets\images\ninearch3.jpg
-    - assets\images\ninearch4.jpg
-    - assets\images\profileimage.png
+    - assets/images/ninearch1.jpg
+    - assets/images/ninearch2.jpg
+    - assets/images/ninearch3.jpg
+    - assets/images/ninearch4.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

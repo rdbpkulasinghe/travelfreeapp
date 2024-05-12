@@ -2,12 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class GuideListPage extends StatelessWidget {
+  // ignore: use_key_in_widget_constructors
   const GuideListPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         title: const Text('Guide List'),
       ),
       body: SingleChildScrollView(
@@ -41,8 +43,8 @@ class GuideListPage extends StatelessWidget {
                           children: [
                             Center(
                               child: SizedBox(
-                                width: 100,
-                                height: 100,
+                                width: 120,
+                                height: 120,
                                 child: ClipOval(
                                   child: guide['profileImageUrl'] != null
                                       ? Image.network(

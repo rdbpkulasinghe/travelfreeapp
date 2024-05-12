@@ -21,6 +21,7 @@ class MapPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _MapPageState createState() => _MapPageState();
 }
 
@@ -89,6 +90,7 @@ class _MapPageState extends State<MapPage> {
       });
       _getDirections();
     } else {
+      // ignore: avoid_print
       print('Place not found');
     }
   }
@@ -97,6 +99,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         title: Text('Map: ${widget.placeName}'),
       ),
       body: SingleChildScrollView(

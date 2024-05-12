@@ -11,6 +11,7 @@ class AdminAddPlacePage extends StatefulWidget {
   const AdminAddPlacePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AdminAddPlacePageState createState() => _AdminAddPlacePageState();
 }
 
@@ -27,15 +28,41 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
   List<File> _selectedImages = [];
   List<String> _imageUrls = [];
 
-  String _selectedLocalCurrency = 'Dollars';
-  String _selectedForeignCurrency = 'Dollars';
-  String _selectedChildCurrency = 'Dollars';
+  String _selectedLocalCurrency = '\$';
+  String _selectedForeignCurrency = '\$';
+  String _selectedChildCurrency = '\$';
   String _selectedDistrict = 'Colombo'; // Default value
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
 
   PlaceLocation? _selectedLocation;
+  final List<String> _selectedTags = [];
+  final List<String> _tagOptions = [
+    'Solo traveler',
+    'Traveling with a partner',
+    'Traveling with family',
+    'Traveling with friends',
+    'Group tours',
+    'Adventure and exploration',
+    'Relaxation and leisure',
+    'Cultural experiences',
+    'Nature and wildlife',
+    'Historical sites and landmarks',
+    'Urban exploration',
+    'Family-friendly activities',
+    'Historical and cultural',
+    'Natural and scenic',
+    'Urban and modern',
+    'Beach and coastal',
+    'Mountain and adventure',
+    'Warm and sunny',
+    'Hot and humid',
+    'Mild and breezy',
+    'Cold and cosy',
+    'Rainy and tropical',
+    'other',
+  ];
 
   Future<void> addDataToFirestore() async {
     if (!_isLocationSelected() ||
@@ -84,6 +111,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
         'longitude': _selectedLocation!.longitude,
         'district': _selectedDistrict,
         'imageUrls': _imageUrls,
+        'tags': _selectedTags,
       });
 
       _nameController.clear();
@@ -99,6 +127,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
       });
 
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -115,6 +144,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
       );
     } catch (e) {
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -169,6 +199,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         title: const Text('Add Place'),
       ),
       body: SingleChildScrollView(
@@ -205,7 +236,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
                         _selectedLocalCurrency = newValue!;
                       });
                     },
-                    items: <String>['Dollars', 'Rupees']
+                    items: <String>['\$', 'Rs']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -234,7 +265,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
                         _selectedForeignCurrency = newValue!;
                       });
                     },
-                    items: <String>['Dollars', 'Rupees']
+                    items: <String>['\$', 'Rs']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -263,7 +294,7 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
                         _selectedChildCurrency = newValue!;
                       });
                     },
-                    items: <String>['Dollars', 'Rupees']
+                    items: <String>['\$', 'Rs']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -349,6 +380,25 @@ class _AdminAddPlacePageState extends State<AdminAddPlacePage> {
                     );
                   }).toList(),
                 ),
+              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _tagOptions.map((tag) {
+                  return CheckboxListTile(
+                    title: Text(tag),
+                    value: _selectedTags.contains(tag),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value != null && value) {
+                          _selectedTags.add(tag);
+                        } else {
+                          _selectedTags.remove(tag);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

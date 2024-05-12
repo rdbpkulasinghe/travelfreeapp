@@ -1,198 +1,204 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HotelAddPage extends StatefulWidget {
-  const HotelAddPage({Key? key}) : super(key: key);
-
-  @override
-  _HotelAddPageState createState() => _HotelAddPageState();
-}
-
-class _HotelAddPageState extends State<HotelAddPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _contactController = TextEditingController();
-  final TextEditingController _descriptionController =
-      TextEditingController(); // Added
-  final TextEditingController _ratingController =
-      TextEditingController(); // Added
-
-  File? _image;
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter the hotel name';
-    }
-    return null;
-  }
-
-  String? _validateAddress(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter the hotel address';
-    }
-    return null;
-  }
-
-  String? _validateContact(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter the hotel contact number';
-    }
-    return null;
-  }
-
-  Future<void> _getImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
-
-  Future<void> _saveDataToFirebase() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        String? imageUrl;
-
-        // Upload image to Firebase Storage
-        if (_image != null) {
-          var imageRef = FirebaseStorage.instance
-              .ref()
-              .child('hotel_images')
-              .child('${DateTime.now()}.jpg');
-          await imageRef.putFile(_image!);
-          imageUrl = await imageRef.getDownloadURL();
-        }
-
-        // Save hotel data along with image URL to Firestore
-        await FirebaseFirestore.instance.collection('hotels').add({
-          'name': _nameController.text,
-          'address': _addressController.text,
-          'contact': _contactController.text,
-          'description': _descriptionController.text, // Added
-          'rating': _ratingController.text, // Added
-          'imageUrl': imageUrl,
-        });
-
-        // Reset the form and image after successful data submission
-        _formKey.currentState!.reset();
-        setState(() {
-          _image = null;
-        });
-
-        // Show success message
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Hotel added successfully'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } catch (error) {
-        print('Error saving data to Firestore: $error');
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Failed to save hotel. Please try again.')),
-        );
-      }
-    }
-  }
+class HotelListPage extends StatelessWidget {
+  // ignore: use_key_in_widget_constructors
+  const HotelListPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Hotel'),
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
+        title: const Text('Hotel List'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: _validateName,
-              ),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
-                validator: _validateAddress,
-              ),
-              TextFormField(
-                controller: _contactController,
-                decoration: const InputDecoration(labelText: 'Contact Number'),
-                validator: _validateContact,
-              ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration:
-                    const InputDecoration(labelText: 'Description'), // Added
-              ),
-              TextFormField(
-                controller: _ratingController,
-                decoration: const InputDecoration(labelText: 'Rating'), // Added
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  _getImage(ImageSource.gallery);
-                },
-                child: Text(_image != null ? 'Change Image' : 'Upload Image'),
-              ),
-              if (_image != null)
-                Image.file(
-                  _image!,
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _saveDataToFirebase();
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text('Error'),
-                          content: const Text(
-                              'Please fill out all required fields.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'),
+        child: Column(
+          children: [
+            StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('hotels').snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No hotels found'));
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    var hotel = snapshot.data!.docs[index].data()
+                        as Map<String, dynamic>;
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Your hotel details UI here
+                            Center(
+                              child: SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: ClipOval(
+                                  child: hotel['imageUrl'] != null
+                                      ? Image.network(
+                                          hotel['imageUrl'],
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(Icons
+                                          .hotel), // Placeholder if image is null
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ), // Add spacing between image and text
+                            Text(
+                              'Name: ${hotel['name'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ), // Increase text size
+                            ),
+                            Text(
+                              'Address: ${hotel['address'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ), // Increase text size
+                            ),
+                            Text(
+                              'Email: ${hotel['email'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                  fontSize: 18), // Increase text size
+                            ),
+                            Text(
+                              'Contact: ${hotel['contact'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ), // Increase text size
+                            ),
+                            Text(
+                              ' ${hotel['description'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ), // Increase text size
+                            ),
+                            Text(
+                              'Rating: ${hotel['rating'] ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ), // Increase text size
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    // Handle approving a hotel
+                                    if (hotel.containsKey('status') &&
+                                        hotel['status'] == 'pending') {
+                                      try {
+                                        await FirebaseFirestore.instance
+                                            .collection('hotels')
+                                            .doc(snapshot.data!.docs[index].id)
+                                            .update({'status': 'approved'});
+                                      } catch (error) {
+                                        // ignore: avoid_print
+                                        print(
+                                            'Error updating hotel status: $error');
+                                        // Handle error updating status
+                                      }
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Error'),
+                                            content: const Text(
+                                                'This hotel has already been approved.'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Approve'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Handle removing a hotel
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Confirmation'),
+                                          content: const Text(
+                                              'Are you sure you want to remove this hotel?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                try {
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection('hotels')
+                                                      .doc(snapshot
+                                                          .data!.docs[index].id)
+                                                      .delete();
+                                                  // ignore: use_build_context_synchronously
+                                                  Navigator.of(context).pop();
+                                                } catch (error) {
+                                                  // ignore: avoid_print
+                                                  print(
+                                                      'Error deleting hotel: $error');
+                                                  // Handle error deleting hotel
+                                                }
+                                              },
+                                              child: const Text('Confirm'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: const Text('Remove'),
+                                ),
+                              ],
                             ),
                           ],
-                        );
-                      },
+                        ),
+                      ),
                     );
-                  }
-                },
-                child: const Text('Request'),
-              ),
-            ],
-          ),
+                  },
+                );
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
         ),
       ),
     );

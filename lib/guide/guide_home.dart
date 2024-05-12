@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travelfreeapp/guide/guide_add.dart';
+import 'package:travelfreeapp/guide/guide_dateconfirm.dart';
 
 class GuideHomeScreen extends StatelessWidget {
   const GuideHomeScreen({Key? key}) : super(key: key);
@@ -8,6 +9,7 @@ class GuideHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
         title: const Text('Guide Home Page'),
       ),
       body: Center(
@@ -25,9 +27,26 @@ class GuideHomeScreen extends StatelessWidget {
                 );
               },
               gradientColors: [
-                Colors.green
-                    .withOpacity(0.55), // Adjust color scheme for guides
-                Colors.green.withOpacity(0.9), // Adjust color scheme for guides
+                Colors.blue.withOpacity(0.55),
+                Colors.blue.withOpacity(0.9), // Adjust color scheme for guides
+              ],
+            ),
+            const SizedBox(height: 20), // Adjust the gap between buttons
+            CustomGridItem(
+              title: 'Approve Date',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ApprovedGuideListPage(
+                          //guideEmail:
+                          //'example@email.com', // Provide guide email
+                          )),
+                );
+              },
+              gradientColors: [
+                Colors.blue.withOpacity(0.55),
+                Colors.blue.withOpacity(0.9),
               ],
             ),
             const SizedBox(height: 20), // Adjust the gap between buttons

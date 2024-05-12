@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:travelfreeapp/screens/accomadation.dart';
 import 'package:travelfreeapp/screens/emergency%20service.dart';
 import 'package:travelfreeapp/screens/guide_page.dart';
 import 'package:travelfreeapp/screens/home_page.dart';
@@ -38,7 +39,7 @@ class BottomNavBar extends StatelessWidget {
             ),
             GButton(
               icon: Icons.hotel,
-              text: 'Accomadation',
+              text: 'Hotel',
               onPressed: () {
                 _navigateToAccomadationSelection(context);
               },
@@ -75,7 +76,11 @@ class BottomNavBar extends StatelessWidget {
     ));
   }
 
-  void _navigateToAccomadationSelection(BuildContext context) {}
+  void _navigateToAccomadationSelection(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const ApprovedHotelListPage(),
+    ));
+  }
 
   void _navigateToEmergencyService(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(

@@ -1,21 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:travelfreeapp/reusable_widget/reusable_widget.dart';
 import 'package:travelfreeapp/screens/signin_screen.dart';
 import 'package:travelfreeapp/utils/colors_utils.dart';
 
-enum UserRole { guide, traveler }
+enum UserRole { guide, traveler, hotel, admin }
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _confirmPasswordTextController =
+      TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _userNameTextController = TextEditingController();
 
@@ -69,8 +72,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 reusableTextField(
                   "Enter Password",
                   Icons.person_outline,
-                  false,
+                  true,
                   _passwordTextController,
+                ),
+                const SizedBox(height: 20),
+                reusableTextField(
+                  "Confirm Password",
+                  Icons.person_outline,
+                  true,
+                  _confirmPasswordTextController,
                 ),
                 const SizedBox(height: 20),
                 // Dropdown for selecting user role
@@ -104,6 +114,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void signUpWithUserRole() async {
     try {
+      if (_passwordTextController.text != _confirmPasswordTextController.text) {
+        // Passwords do not match, show error message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Error"),
+              content: const Text("Passwords do not match."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: _emailTextController.text,
@@ -122,12 +154,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const SignInScreen()),
       );
     } catch (e) {
+      String errorMessage = "An error occurred. Please try again later.";
+
+      if (e is FirebaseAuthException) {
+        if (e.code == 'email-already-in-use') {
+          errorMessage = "The account already exists for that email.";
+        } else {
+          errorMessage = "Something went wrong. Please try again later.";
+        }
+      }
+
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      // ignore: avoid_print
       print("Error during sign up: $e");
-      // Handle sign-up errors
     }
   }
 }

@@ -1,5 +1,6 @@
-import 'dart:convert';
+// ignore_for_file: file_names
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -41,6 +42,7 @@ class _EmergencyServiceState extends State<EmergencyService> {
         );
       });
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Selected Location'),
@@ -93,6 +95,7 @@ class _EmergencyServiceState extends State<EmergencyService> {
     try {
       locationResult = await locationData.getLocation();
     } catch (error) {
+      // ignore: avoid_print
       print('Error getting location: $error');
     }
 
@@ -179,6 +182,7 @@ class _EmergencyServiceState extends State<EmergencyService> {
       }
     } else {
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('No Nearby Places'),
@@ -201,6 +205,7 @@ class _EmergencyServiceState extends State<EmergencyService> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Emergency Service'),
+        backgroundColor: const Color.fromARGB(255, 65, 105, 225),
       ),
       body: Container(
         color: Colors.white,

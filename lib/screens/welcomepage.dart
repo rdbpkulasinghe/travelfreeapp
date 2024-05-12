@@ -18,14 +18,17 @@ class QuestionnaireApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  // ignore: use_key_in_widget_constructors
   const HomeScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 65, 105, 225),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor:
+            const Color.fromARGB(255, 65, 105, 225), // Set app bar color
+
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -50,7 +53,7 @@ class HomeScreen extends StatelessWidget {
               "Your journey begins here. Welcome to Travel Free, where we help you create unforgettable memories.",
               style: GoogleFonts.pacifico(
                 textStyle: const TextStyle(
-                  color: Color.fromARGB(255, 5, 233, 107),
+                  color: Color.fromARGB(255, 41, 135, 50),
                   fontSize: 36,
                 ),
               ),
@@ -69,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                backgroundColor: const Color.fromARGB(255, 65, 105, 225),
                 padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
                 shape: RoundedRectangleBorder(
                   borderRadius:
@@ -80,7 +83,8 @@ class HomeScreen extends StatelessWidget {
                 "Start Questionnaire",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.black87, // Button text color
+                  color:
+                      Color.fromARGB(255, 255, 255, 255), // Button text color
                 ),
               ),
             ),

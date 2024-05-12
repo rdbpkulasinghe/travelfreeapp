@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:travelfreeapp/admin/Hotel_add.dart';
-import 'package:travelfreeapp/admin/admin_add_place.dart';
-import 'package:travelfreeapp/admin/guide_list_page.dart';
+import 'package:travelfreeapp/accomadation/accomadation.dart';
+import 'package:travelfreeapp/accomadation/accomadation_dateconfirm.dart';
 
-class AdminHomeScreen extends StatelessWidget {
-  const AdminHomeScreen({Key? key}) : super(key: key);
+class AccomadationHomeScreen extends StatelessWidget {
+  const AccomadationHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 65, 105, 225),
-        title: const Text('Admin Home Page'),
+        title: const Text('Hotel Home Page'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(height: 20), // Adjust the gap between buttons
             CustomGridItem(
-              title: 'Add Place',
+              title: 'Add Hotel',
               onTap: () {
-                // Navigate to AdminAddPlacePage when the button is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HotelAddPage()),
+                );
+              },
+              gradientColors: [
+                Colors.blue.withOpacity(0.55),
+                Colors.blue.withOpacity(0.9), // Adjust color scheme for guides
+              ],
+            ),
+            const SizedBox(height: 20), // Adjust the gap between buttons
+            CustomGridItem(
+              title: 'Approve Date',
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const AdminAddPlacePage()),
+                      builder: (context) => const ApprovedHotelListPage(
+                          //guideEmail:
+                          //'example@email.com', // Provide guide email
+                          )),
                 );
               },
               gradientColors: [
@@ -34,36 +50,6 @@ class AdminHomeScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20), // Adjust the gap between buttons
-            CustomGridItem(
-              title: 'Approve Guide',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const GuideListPage()),
-                );
-              },
-              gradientColors: [
-                Colors.blue.withOpacity(0.55),
-                Colors.blue.withOpacity(0.9),
-              ],
-            ),
-            const SizedBox(height: 20), // Adjust the gap between buttons
-            CustomGridItem(
-              title: 'Approve hotel',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HotelListPage()),
-                );
-                // Handle add another action
-              },
-              gradientColors: [
-                Colors.blue.withOpacity(0.55),
-                Colors.blue.withOpacity(0.9),
-              ],
-            ),
           ],
         ),
       ),

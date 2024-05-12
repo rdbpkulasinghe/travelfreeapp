@@ -55,6 +55,7 @@ class _LocationInputState extends State<LocationInput> {
         _isGettingLocation = false;
       });
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Selected Location'),
@@ -110,6 +111,7 @@ class _LocationInputState extends State<LocationInput> {
     try {
       locationResult = await locationData.getLocation();
     } catch (error) {
+      // ignore: avoid_print
       print('Error getting location: $error');
     }
 

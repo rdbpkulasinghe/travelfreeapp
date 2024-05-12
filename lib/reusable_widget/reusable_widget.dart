@@ -90,10 +90,11 @@ class ButtonContainer extends StatelessWidget {
       alignment: Alignment.center,
       child: ElevatedButton(
         onPressed: onPressed,
+        // ignore: sort_child_properties_last
         child: Text(text),
         style: ElevatedButton.styleFrom(
-          primary: Colors.lightBlue,
-          onPrimary: Colors.white,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.lightBlue,
           minimumSize: const Size(140.0, 30.0),
         ),
       ),

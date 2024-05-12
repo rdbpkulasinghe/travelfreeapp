@@ -1,168 +1,55 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:travelfreeapp/reusable_widget/bottomnavbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelfreeapp/screens/home_page.dart';
 import 'package:travelfreeapp/screens/location_details.dart';
 import 'package:travelfreeapp/screens/map_page.dart';
-import 'package:travelfreeapp/screens/userselect.dart';
-import 'package:travelfreeapp/screens/welcomepage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
 
-class HomePage extends StatelessWidget {
-  // ignore: use_key_in_widget_constructors
-  const HomePage({super.key});
-
-  Future<void> addSelectedPlace(
-      BuildContext context, Map<String, dynamic> place) async {
-    // Get the currently logged in user
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      String userId = user.uid;
-      try {
-        // Reference to the subcollection under the user's document
-        CollectionReference userPlacesRef = FirebaseFirestore.instance
-            .collection('userselectplace')
-            .doc(userId)
-            .collection('places');
-        // Check if the place already exists in user's selected places
-        QuerySnapshot querySnapshot =
-            await userPlacesRef.where('name', isEqualTo: place['name']).get();
-
-        // ignore: avoid_print
-        print(querySnapshot.docs);
-
-        if (querySnapshot.docs.isNotEmpty) {
-          // Place already exists, show a message
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Place already added!'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-          return;
-        }
-        await userPlacesRef.add(place);
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Place added successfully!'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      } catch (error) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save place: $error'),
-            duration: const Duration(seconds: 2), // Adjust as needed
-          ),
-        );
-
-        // ignore: avoid_print
-        print('Failed to save place: $error');
-      }
-    } else {
-      // ignore: avoid_print
-      print('User is not logged in.');
-    }
-  }
-
-  Future<QuerySnapshot> getRecommendedPlaces() async {
-    List ans = await callApi();
-    if (ans.isNotEmpty) {
-      return FirebaseFirestore.instance
-          .collection('places')
-          .where('tags', arrayContainsAny: ans)
-          .get();
-    }
-    return FirebaseFirestore.instance.collection('places').get();
-  }
-
-  Future<List> callApi() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    List ans = [];
-    if (user != null) {
-      String userId = user.uid;
-      DocumentSnapshot answers = await FirebaseFirestore.instance
-          .collection('answers')
-          .doc(userId)
-          .get();
-      if (answers.data() != null) {
-        // ignore: avoid_print
-
-        // ignore: avoid_print
-        print(answers.data().toString());
-        // json.encode(answers.data());
-        Map<String, dynamic> jsonMap = json.decode(json.encode(answers.data()));
-        if (jsonMap['Main travel goals'] != null) {
-          ans.addAll(answers.get('Main travel goals'));
-        }
-        if (jsonMap['Destination preferences'] != null) {
-          ans.addAll(answers.get('Destination preferences'));
-        }
-        if (jsonMap['Dietary preferences'] != null) {
-          ans.addAll(answers.get('Dietary preferences'));
-        }
-        if (jsonMap['Traveler type'] != null) {
-          ans.addAll(answers.get('Traveler type'));
-        }
-        if (jsonMap['Local or Foreigner'] != null) {
-          ans.addAll(answers.get('Local or Foreigner'));
-        }
-        // ans.addAll(answers.get('Destination preferences'));
-        // ans.addAll(answers.get('Dietary preferences'));
-        // ans.addAll(answers.get('Traveler type'));
-        // ans.addAll(answers.get('Local or Foreigner'));
-      }
-    }
-    return ans;
-  }
+class UserSelectPlace extends StatelessWidget {
+  const UserSelectPlace({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
     final CarouselController _carouselController = CarouselController();
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('User is not logged in'),
+        ),
+      );
+    }
+
+    // Create a GlobalKey for the ScaffoldMessenger
+    final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+        GlobalKey<ScaffoldMessengerState>();
 
     return Scaffold(
+      key: scaffoldMessengerKey,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 65, 105, 225),
+        title: const Text('User select place'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const QuestionnaireApp()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           },
         ),
-        title: const Icon(
-          Icons.home,
-          color: Colors.black,
-          size: 36,
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UserSelectAllPlace(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.place, color: Colors.white, size: 28),
-            label: const Text(
-              'User',
-              style: TextStyle(color: Colors.white, fontSize: 15),
-            ),
-          ),
-        ],
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: getRecommendedPlaces(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('userselectplace')
+            .doc(user.uid)
+            .collection('places')
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -276,37 +163,32 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Location: ${place['address'] ?? 'N/A'}',
+                          'Location: ${place['location'] ?? 'N/A'}',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Local Price: ${place['localPrice'] ?? 'N/A'} ${place['localCurrency'] ?? ''}',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'Foreign Price: ${place['foreignPrice'] ?? 'N/A'} ${place['foreignCurrency'] ?? ''}',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'Child Price: ${place['childPrice'] ?? 'N/A'} ${place['childCurrency'] ?? ''}',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Local Price: ${place['localPrice'] ?? 'N/A'} ${place['localCurrency'] ?? ''}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          'Foreign Price: ${place['foreignPrice'] ?? 'N/A'} ${place['foreignCurrency'] ?? ''}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          'Child Price: ${place['childPrice'] ?? 'N/A'} ${place['childCurrency'] ?? ''}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -351,50 +233,79 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                // Get the currently logged in user
+                                User? user = FirebaseAuth.instance.currentUser;
+
+                                if (user != null) {
+                                  String userId = user.uid;
+                                  // Reference to the subcollection under the user's document
+                                  CollectionReference userPlacesRef =
+                                      FirebaseFirestore.instance
+                                          .collection('userselectplace')
+                                          .doc(userId)
+                                          .collection('places');
+
+                                  try {
+                                    // Delete the document corresponding to the current place
+                                    await userPlacesRef
+                                        .doc(snapshot.data!.docs[index].id)
+                                        .delete();
+
+                                    // Show notification or perform any other action upon successful removal
+                                    scaffoldMessengerKey.currentState
+                                        ?.showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Place removed successfully!'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  } catch (error) {
+                                    // Show error message if deletion fails
+                                    scaffoldMessengerKey.currentState
+                                        ?.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Failed to remove place: $error'),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                    // ignore: avoid_print
+                                    print('Failed to remove place: $error');
+                                  }
+                                } else {
+                                  // ignore: avoid_print
+                                  print('User is not logged in.');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.lightBlue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Remove',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          //getRecommendedPlaces();
-                          addSelectedPlace(context,
-                              place); // Call the function to add the selected place
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightBlue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text(
-                          'Add',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Divider(), //we use this for divide each place
+                  const Divider(),
                 ],
               );
             },
           );
         },
       ),
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
-}
-
-void main() {
-  runApp(const MaterialApp(
-    home: HomePage(),
-  ));
 }
