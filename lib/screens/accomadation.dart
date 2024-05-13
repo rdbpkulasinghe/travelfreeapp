@@ -98,10 +98,8 @@ class ApprovedHotelListPage extends StatelessWidget {
                 if (approvedHotels.isEmpty) {
                   return const Center(child: Text('No approved hotels found'));
                 }
-                // ignore: avoid_print
+                // ignore: avoid_printrun
                 print(approvedHotels);
-
-                List<String> imageUrl = List<String>.from(['imageUrls']);
 
                 return ListView.builder(
                   shrinkWrap: true,
@@ -114,6 +112,9 @@ class ApprovedHotelListPage extends StatelessWidget {
                     print(hotelId);
                     var hotel =
                         approvedHotels[index].data() as Map<String, dynamic>;
+                    String image = hotel['imageUrl'];
+                    List<String> images = [];
+                    images.add(image);
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -135,7 +136,7 @@ class ApprovedHotelListPage extends StatelessWidget {
                                   enlargeCenterPage: true,
                                   scrollDirection: Axis.horizontal,
                                 ),
-                                items: imageUrl.map((imageUrl) {
+                                items: images.map((imageUrl) {
                                   return Builder(
                                     builder: (BuildContext context) {
                                       return Container(
@@ -147,6 +148,10 @@ class ApprovedHotelListPage extends StatelessWidget {
                                           color: Colors.grey,
                                           borderRadius:
                                               BorderRadius.circular(8.0),
+                                          image: DecorationImage(
+                                            image: NetworkImage(imageUrl),
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                         child: Row(
                                           mainAxisAlignment:
@@ -206,12 +211,6 @@ class ApprovedHotelListPage extends StatelessWidget {
                             ),
                             Text(
                               'Description: ${hotel['description'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                            ),
-                            Text(
-                              'Rating: ${hotel['rating'] ?? 'N/A'}',
                               style: const TextStyle(
                                 fontSize: 18,
                               ),
