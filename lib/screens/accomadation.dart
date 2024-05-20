@@ -98,7 +98,7 @@ class ApprovedHotelListPage extends StatelessWidget {
                 if (approvedHotels.isEmpty) {
                   return const Center(child: Text('No approved hotels found'));
                 }
-                // ignore: avoid_printrun
+                // ignore: avoid_printrun, avoid_print
                 print(approvedHotels);
 
                 return ListView.builder(

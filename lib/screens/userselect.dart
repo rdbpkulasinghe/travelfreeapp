@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+//import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:travelfreeapp/screens/home_page.dart';
 import 'package:travelfreeapp/screens/location_details.dart';
@@ -382,6 +383,8 @@ class UserSelectAllPlace extends StatelessWidget {
                     print(hotelId);
                     var hotel = snapshot.data!.docs[index].data()
                         as Map<String, dynamic>;
+                    List<String> images = [];
+
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -403,8 +406,7 @@ class UserSelectAllPlace extends StatelessWidget {
                                   enlargeCenterPage: true,
                                   scrollDirection: Axis.horizontal,
                                 ),
-                                items:
-                                    hotel['imageUrls'].map<Widget>((imageUrl) {
+                                items: images.map((imageUrls) {
                                   return Builder(
                                     builder: (BuildContext context) {
                                       return Container(
@@ -417,7 +419,7 @@ class UserSelectAllPlace extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                           image: DecorationImage(
-                                            image: NetworkImage(imageUrl),
+                                            image: NetworkImage(imageUrls),
                                             fit: BoxFit.cover,
                                           ),
                                         ),
